@@ -1,0 +1,25 @@
+name: Attach the skill zip to a toolkit release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  zip:
+    # Runs only in the toolkit repository itself, not in pack repositories created from the template.
+    if: github.repository == 'golejjer/accountants-toolkit'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Zip the skill folder
+        run: |
+          cd skill
+          zip -r ../statutory-pack-authoring.zip statutory-pack-authoring
+
+      - name: Attach it to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: statutory-pack-authoring.zip

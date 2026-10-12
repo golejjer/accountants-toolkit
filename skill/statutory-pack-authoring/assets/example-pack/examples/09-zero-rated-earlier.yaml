@@ -1,0 +1,22 @@
+id: "09"
+title: "Zero-rated sale under the earlier rate period"
+date: 2025-06-01
+document: sale_invoice
+answers:
+  registered_vat: yes
+  levy_liable: no
+  sector: services
+lines:
+  - {description: Exported goods, amount: "750.00", amount_type: exclusive, codes: [VAT-ZERO]}
+working: |
+  Zero-rated: tax 0.00. Total = 750.00
+expected:
+  lines:
+    - net: "750.00"
+      taxes: {VAT-ZERO: "0.00"}
+  total: "750.00"
+  postings:
+    - {account: trade_receivables, debit: "750.00"}
+    - {account: revenue, credit: "750.00"}
+  boxes:
+    VAT-RETURN: {"2": "750.00"}

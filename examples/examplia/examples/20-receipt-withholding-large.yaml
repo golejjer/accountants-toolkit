@@ -1,0 +1,22 @@
+id: "20"
+title: "Customer withholds on a larger fee"
+date: 2026-06-30
+document: receipt
+answers:
+  registered_vat: yes
+  levy_liable: yes
+  sector: services
+settlement:
+  amount: "2000.00"
+  codes: [WHT-SVC]
+working: |
+  Withheld: 2000.00 x 5% = 100.00
+  Cash received = 1900.00
+expected:
+  total: "1900.00"
+  postings:
+    - {account: bank, debit: "1900.00"}
+    - {account: wht_receivable, debit: "100.00"}
+    - {account: trade_receivables, credit: "2000.00"}
+  boxes:
+    WHT-RETURN: {"1": "100.00"}

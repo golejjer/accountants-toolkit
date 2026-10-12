@@ -1,0 +1,23 @@
+id: "15"
+title: "Unrecoverable VAT under the earlier rate"
+date: 2025-08-01
+document: purchase_bill
+answers:
+  registered_vat: yes
+  levy_liable: no
+  sector: services
+lines:
+  - {description: Client gift, amount: "100.00", amount_type: exclusive, codes: [VAT-NR]}
+working: |
+  Rate in force on 1 Aug 2025: 14%; 100.00 x 14% = 14.00, not recoverable
+  Expense and owed to supplier = 114.00
+expected:
+  lines:
+    - net: "100.00"
+      taxes: {VAT-NR: "14.00"}
+  total: "114.00"
+  postings:
+    - {account: expense, debit: "114.00"}
+    - {account: trade_payables, credit: "114.00"}
+  boxes:
+    VAT-RETURN: {"5": "100.00"}

@@ -1,0 +1,22 @@
+id: "19"
+title: "Business pays a supplier and withholds 5%"
+date: 2026-04-20
+document: payment
+answers:
+  registered_vat: yes
+  levy_liable: yes
+  sector: services
+settlement:
+  amount: "460.00"
+  codes: [WHT-SVC]
+working: |
+  Withheld: 460.00 x 5% = 23.00
+  Cash paid = 460.00 - 23.00 = 437.00
+expected:
+  total: "437.00"
+  postings:
+    - {account: trade_payables, debit: "460.00"}
+    - {account: bank, credit: "437.00"}
+    - {account: wht_payable, credit: "23.00"}
+  boxes:
+    WHT-RETURN: {"2": "460.00", "3": "23.00"}

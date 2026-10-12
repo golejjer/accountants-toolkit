@@ -1,0 +1,27 @@
+id: "01"
+title: "Service sale with gross-up levy and compound VAT"
+date: 2026-03-15
+document: sale_invoice
+answers:
+  registered_vat: yes
+  levy_liable: yes
+  sector: services
+lines:
+  - {description: Consulting fee, amount: "1000.00", amount_type: exclusive, codes: [LEVY-SVC, VAT-STD]}
+working: |
+  Levy (services, fraction 1, gross-up 3%): 1000.00 x 3 / 97 = 30.9278..., rounded half up = 30.93
+  VAT 15% on (net + levy): (1000.00 + 30.93) x 15% = 154.6395, rounded = 154.64
+  Total = 1000.00 + 30.93 + 154.64 = 1185.57
+expected:
+  lines:
+    - net: "1000.00"
+      taxes: {LEVY-SVC: "30.93", VAT-STD: "154.64"}
+  total: "1185.57"
+  postings:
+    - {account: trade_receivables, debit: "1185.57"}
+    - {account: revenue, credit: "1000.00"}
+    - {account: levy_payable, credit: "30.93"}
+    - {account: output_tax_control, credit: "154.64"}
+  boxes:
+    VAT-RETURN: {"1": "1000.00", "4": "154.64"}
+    LEVY-RETURN: {"1": "1000.00", "2": "30.93"}

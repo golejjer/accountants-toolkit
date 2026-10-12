@@ -1,0 +1,26 @@
+id: "07"
+title: "Exported service: zero-rated, levy still due"
+date: 2026-05-05
+document: sale_invoice
+answers:
+  registered_vat: yes
+  levy_liable: yes
+  sector: services
+lines:
+  - {description: Consulting for overseas client, amount: "5000.00", amount_type: exclusive, codes: [LEVY-SVC, VAT-ZERO]}
+working: |
+  Levy: 5000.00 x 3 / 97 = 154.6391..., rounded = 154.64
+  VAT zero-rated: 0.00
+  Total = 5000.00 + 154.64 = 5154.64
+expected:
+  lines:
+    - net: "5000.00"
+      taxes: {LEVY-SVC: "154.64", VAT-ZERO: "0.00"}
+  total: "5154.64"
+  postings:
+    - {account: trade_receivables, debit: "5154.64"}
+    - {account: revenue, credit: "5000.00"}
+    - {account: levy_payable, credit: "154.64"}
+  boxes:
+    VAT-RETURN: {"2": "5000.00"}
+    LEVY-RETURN: {"1": "5000.00", "2": "154.64"}

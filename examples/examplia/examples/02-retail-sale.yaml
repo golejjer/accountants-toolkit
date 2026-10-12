@@ -1,0 +1,28 @@
+id: "02"
+title: "Retail sale, levy on three-fifths of turnover"
+date: 2026-03-16
+document: sale_invoice
+answers:
+  registered_vat: yes
+  levy_liable: yes
+  sector: retail
+lines:
+  - {description: Goods, amount: "1000.00", amount_type: exclusive, codes: [LEVY-RET, VAT-STD]}
+working: |
+  Levy base (retail, fraction 3/5): 1000.00 x 3/5 = 600.00
+  Levy (gross-up 3%): 600.00 x 3 / 97 = 18.5567..., rounded = 18.56
+  VAT 15%: (1000.00 + 18.56) x 15% = 152.784, rounded = 152.78
+  Total = 1000.00 + 18.56 + 152.78 = 1171.34
+expected:
+  lines:
+    - net: "1000.00"
+      taxes: {LEVY-RET: "18.56", VAT-STD: "152.78"}
+  total: "1171.34"
+  postings:
+    - {account: trade_receivables, debit: "1171.34"}
+    - {account: revenue, credit: "1000.00"}
+    - {account: levy_payable, credit: "18.56"}
+    - {account: output_tax_control, credit: "152.78"}
+  boxes:
+    VAT-RETURN: {"1": "1000.00", "4": "152.78"}
+    LEVY-RETURN: {"1": "1000.00", "2": "18.56"}

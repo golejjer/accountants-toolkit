@@ -1,0 +1,30 @@
+id: "17"
+title: "Tax-inclusive retail sale with levy and VAT"
+date: 2026-02-02
+document: sale_invoice
+answers:
+  registered_vat: yes
+  levy_liable: yes
+  sector: retail
+lines:
+  - {description: Goods at shelf price, amount: "1000.00", amount_type: inclusive, codes: [LEVY-RET, VAT-STD]}
+working: |
+  Per 1.00 of net: levy = 3/5 x 3 / 97 = 0.0185567...; VAT = (1 + 0.0185567...) x 15% = 0.1527835...
+  Multiplier = 1 + 0.0185567... + 0.1527835... = 1.1713402...
+  Net estimate = 1000.00 / 1.1713402... = 853.7229...
+  Levy = 853.7229... x 0.0185567... = 15.8422..., rounded = 15.84
+  VAT = (853.7229... + 15.84) x 15% = 130.4344..., rounded = 130.43
+  Net = 1000.00 - 15.84 - 130.43 = 853.73 (the net absorbs the rounding)
+expected:
+  lines:
+    - net: "853.73"
+      taxes: {LEVY-RET: "15.84", VAT-STD: "130.43"}
+  total: "1000.00"
+  postings:
+    - {account: trade_receivables, debit: "1000.00"}
+    - {account: revenue, credit: "853.73"}
+    - {account: levy_payable, credit: "15.84"}
+    - {account: output_tax_control, credit: "130.43"}
+  boxes:
+    VAT-RETURN: {"1": "853.73", "4": "130.43"}
+    LEVY-RETURN: {"1": "853.73", "2": "15.84"}

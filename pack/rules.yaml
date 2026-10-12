@@ -1,0 +1,53 @@
+# See references/format.md for every field. Quote all amounts, rates and fractions.
+# Every rate needs effective_from and an official source.
+
+questions:
+  - key: <question_key>
+    text: <Question the platform asks the business>
+    type: yes_no                      # yes_no | choice (with options)
+
+accounts:
+  - key: <account_key>
+    name: <Account name>
+    subtype: current_liability        # one of the fixed subtypes
+    purpose: <What the account holds>
+    add_when: <question_key>
+
+taxes:
+  - key: <TAX>
+    name: <Tax name>
+    kind: output_input                # output_input | levy | withholding
+    applies_when: <question_key>
+    accounts: {output: <account_key>, input: <account_key>}
+    filing:
+      frequency: monthly
+      due: {days_after_period_end: 20}
+
+tax_codes:
+  - key: <TAX-CODE>
+    tax: <TAX>
+    name: <Name a business would recognise>
+    applies_to: [sales, purchases]
+    treatment: standard
+    input_recoverable: true
+    rates:
+      - rate: "<percent>"
+        effective_from: YYYY-MM-DD
+        effective_to: null
+        source: "<Act, section, gazette or circular, date>"
+
+rounding:
+  level: line
+  method: half_up
+  decimals: 2
+
+returns:
+  - key: <RETURN>
+    tax: <TAX>
+    name: <Return name>
+    boxes:
+      - key: "1"
+        label: <Box label as printed on the return>
+        sum: [{code: <TAX-CODE>, side: sales, measure: net}]
+
+pending_changes: []

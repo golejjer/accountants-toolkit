@@ -1,0 +1,29 @@
+id: "05"
+title: "Rounding edge: half a cent on each line"
+date: 2026-04-01
+document: sale_invoice
+answers:
+  registered_vat: yes
+  levy_liable: no
+  sector: services
+lines:
+  - {description: Item A, amount: "10.30", amount_type: exclusive, codes: [VAT-STD]}
+  - {description: Item B, amount: "10.30", amount_type: exclusive, codes: [VAT-STD]}
+working: |
+  Not liable for the levy, so VAT is on the net only.
+  Each line: 10.30 x 15% = 1.545, rounded half up = 1.55
+  Line rounding: tax = 1.55 + 1.55 = 3.10 (document rounding would give 20.60 x 15% = 3.09)
+  Total = 20.60 + 3.10 = 23.70
+expected:
+  lines:
+    - net: "10.30"
+      taxes: {VAT-STD: "1.55"}
+    - net: "10.30"
+      taxes: {VAT-STD: "1.55"}
+  total: "23.70"
+  postings:
+    - {account: trade_receivables, debit: "23.70"}
+    - {account: revenue, credit: "20.60"}
+    - {account: output_tax_control, credit: "3.10"}
+  boxes:
+    VAT-RETURN: {"1": "20.60", "4": "3.10"}

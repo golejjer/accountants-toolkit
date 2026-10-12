@@ -1,0 +1,28 @@
+id: "04"
+title: "Service sale on the first day of the 15% rate"
+date: 2026-01-01
+document: sale_invoice
+answers:
+  registered_vat: yes
+  levy_liable: yes
+  sector: services
+lines:
+  - {description: Consulting fee, amount: "2000.00", amount_type: exclusive, codes: [LEVY-SVC, VAT-STD]}
+working: |
+  Rate in force on 1 Jan 2026: VAT 15%
+  Levy: 2000.00 x 3 / 97 = 61.8556..., rounded = 61.86
+  VAT: (2000.00 + 61.86) x 15% = 309.279, rounded = 309.28
+  Total = 2000.00 + 61.86 + 309.28 = 2371.14
+expected:
+  lines:
+    - net: "2000.00"
+      taxes: {LEVY-SVC: "61.86", VAT-STD: "309.28"}
+  total: "2371.14"
+  postings:
+    - {account: trade_receivables, debit: "2371.14"}
+    - {account: revenue, credit: "2000.00"}
+    - {account: levy_payable, credit: "61.86"}
+    - {account: output_tax_control, credit: "309.28"}
+  boxes:
+    VAT-RETURN: {"1": "2000.00", "4": "309.28"}
+    LEVY-RETURN: {"1": "2000.00", "2": "61.86"}

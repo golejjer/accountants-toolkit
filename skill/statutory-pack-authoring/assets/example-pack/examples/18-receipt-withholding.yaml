@@ -1,0 +1,22 @@
+id: "18"
+title: "Customer pays an invoice and withholds 5%"
+date: 2026-04-15
+document: receipt
+answers:
+  registered_vat: yes
+  levy_liable: yes
+  sector: services
+settlement:
+  amount: "1185.57"
+  codes: [WHT-SVC]
+working: |
+  Withheld: 1185.57 x 5% = 59.2785, rounded = 59.28
+  Cash received = 1185.57 - 59.28 = 1126.29
+expected:
+  total: "1126.29"
+  postings:
+    - {account: bank, debit: "1126.29"}
+    - {account: wht_receivable, debit: "59.28"}
+    - {account: trade_receivables, credit: "1185.57"}
+  boxes:
+    WHT-RETURN: {"1": "59.28"}

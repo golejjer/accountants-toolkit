@@ -1,0 +1,30 @@
+id: "14"
+title: "Reverse charge and unrecoverable VAT on one bill"
+date: 2026-06-01
+document: purchase_bill
+answers:
+  registered_vat: yes
+  levy_liable: no
+  sector: services
+lines:
+  - {description: Overseas consulting, amount: "500.00", amount_type: exclusive, codes: [VAT-RC]}
+  - {description: Staff entertainment, amount: "120.00", amount_type: exclusive, codes: [VAT-NR]}
+working: |
+  Reverse charge: 500.00 x 15% = 75.00 (output and recoverable input)
+  Unrecoverable: 120.00 x 15% = 18.00, added to the expense
+  Expense = 500.00 + 120.00 + 18.00 = 638.00
+  Owed to supplier = 500.00 + 120.00 + 18.00 = 638.00
+expected:
+  lines:
+    - net: "500.00"
+      taxes: {VAT-RC: "75.00"}
+    - net: "120.00"
+      taxes: {VAT-NR: "18.00"}
+  total: "638.00"
+  postings:
+    - {account: expense, debit: "638.00"}
+    - {account: input_tax_control, debit: "75.00"}
+    - {account: output_tax_control, credit: "75.00"}
+    - {account: trade_payables, credit: "638.00"}
+  boxes:
+    VAT-RETURN: {"4": "75.00", "5": "620.00", "6": "75.00"}

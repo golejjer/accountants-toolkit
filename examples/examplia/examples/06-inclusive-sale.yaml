@@ -1,0 +1,25 @@
+id: "06"
+title: "Tax-inclusive sale"
+date: 2026-04-02
+document: sale_invoice
+answers:
+  registered_vat: yes
+  levy_liable: no
+  sector: services
+lines:
+  - {description: Package price, amount: "1000.00", amount_type: inclusive, codes: [VAT-STD]}
+working: |
+  Inclusive amount 1000.00 at VAT 15%: net estimate = 1000.00 / 1.15 = 869.5652...
+  VAT = 869.5652... x 15% = 130.4347..., rounded = 130.43
+  Net = 1000.00 - 130.43 = 869.57 (the net absorbs the rounding)
+expected:
+  lines:
+    - net: "869.57"
+      taxes: {VAT-STD: "130.43"}
+  total: "1000.00"
+  postings:
+    - {account: trade_receivables, debit: "1000.00"}
+    - {account: revenue, credit: "869.57"}
+    - {account: output_tax_control, credit: "130.43"}
+  boxes:
+    VAT-RETURN: {"1": "869.57", "4": "130.43"}

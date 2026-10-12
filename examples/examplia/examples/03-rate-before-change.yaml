@@ -1,0 +1,28 @@
+id: "03"
+title: "Service sale on the last day of the 14% rate"
+date: 2025-12-31
+document: sale_invoice
+answers:
+  registered_vat: yes
+  levy_liable: yes
+  sector: services
+lines:
+  - {description: Consulting fee, amount: "1000.00", amount_type: exclusive, codes: [LEVY-SVC, VAT-STD]}
+working: |
+  Rate in force on 31 Dec 2025: VAT 14%
+  Levy: 1000.00 x 3 / 97 = 30.9278..., rounded = 30.93
+  VAT: (1000.00 + 30.93) x 14% = 144.3302, rounded = 144.33
+  Total = 1000.00 + 30.93 + 144.33 = 1175.26
+expected:
+  lines:
+    - net: "1000.00"
+      taxes: {LEVY-SVC: "30.93", VAT-STD: "144.33"}
+  total: "1175.26"
+  postings:
+    - {account: trade_receivables, debit: "1175.26"}
+    - {account: revenue, credit: "1000.00"}
+    - {account: levy_payable, credit: "30.93"}
+    - {account: output_tax_control, credit: "144.33"}
+  boxes:
+    VAT-RETURN: {"1": "1000.00", "4": "144.33"}
+    LEVY-RETURN: {"1": "1000.00", "2": "30.93"}

@@ -1,0 +1,24 @@
+id: "10"
+title: "Standard-rated purchase, input tax recovered"
+date: 2026-04-02
+document: purchase_bill
+answers:
+  registered_vat: yes
+  levy_liable: no
+  sector: services
+lines:
+  - {description: Office supplies, amount: "400.00", amount_type: exclusive, codes: [VAT-STD]}
+working: |
+  VAT 15%: 400.00 x 15% = 60.00, recoverable
+  Owed to supplier = 400.00 + 60.00 = 460.00
+expected:
+  lines:
+    - net: "400.00"
+      taxes: {VAT-STD: "60.00"}
+  total: "460.00"
+  postings:
+    - {account: expense, debit: "400.00"}
+    - {account: input_tax_control, debit: "60.00"}
+    - {account: trade_payables, credit: "460.00"}
+  boxes:
+    VAT-RETURN: {"5": "400.00", "6": "60.00"}

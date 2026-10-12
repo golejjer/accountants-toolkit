@@ -1,0 +1,16 @@
+schema_version: "0.1"
+pack:
+  id: examplia-general
+  title: Examplia general statutory pack (fictional example)
+  jurisdiction: XE
+  scope: general
+  currency: XTS
+  version: 0.1.0
+  level: private
+  status: draft
+  authors:
+    - name: A. Author
+      credential: Member, professional accountancy body
+      member_no: "00000"
+  reviewers: []
+  last_reviewed: null

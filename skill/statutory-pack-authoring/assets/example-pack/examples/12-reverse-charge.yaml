@@ -1,0 +1,25 @@
+id: "12"
+title: "Imported service under reverse charge"
+date: 2026-05-10
+document: purchase_bill
+answers:
+  registered_vat: yes
+  levy_liable: no
+  sector: services
+lines:
+  - {description: Overseas software service, amount: "1000.00", amount_type: exclusive, codes: [VAT-RC]}
+working: |
+  Reverse charge 15%: 1000.00 x 15% = 150.00, accounted for by the buyer as output tax and, being recoverable, as input tax
+  Owed to supplier = 1000.00 (no VAT charged by the supplier)
+expected:
+  lines:
+    - net: "1000.00"
+      taxes: {VAT-RC: "150.00"}
+  total: "1000.00"
+  postings:
+    - {account: expense, debit: "1000.00"}
+    - {account: input_tax_control, debit: "150.00"}
+    - {account: output_tax_control, credit: "150.00"}
+    - {account: trade_payables, credit: "1000.00"}
+  boxes:
+    VAT-RETURN: {"4": "150.00", "5": "1000.00", "6": "150.00"}

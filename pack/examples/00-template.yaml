@@ -1,0 +1,20 @@
+id: "00"
+title: "<What this example proves>"
+date: YYYY-MM-DD
+document: sale_invoice                # sale_invoice | purchase_bill | receipt | payment
+answers:
+  <question_key>: yes
+lines:
+  - {description: <Item>, amount: "0.00", amount_type: exclusive, codes: [<TAX-CODE>]}
+working: |
+  <Every step as plain arithmetic, with rates, fractions and rounding>
+expected:
+  lines:
+    - net: "0.00"
+      taxes: {<TAX-CODE>: "0.00"}
+  total: "0.00"
+  postings:
+    - {account: trade_receivables, debit: "0.00"}
+    - {account: revenue, credit: "0.00"}
+  boxes:
+    <RETURN>: {"1": "0.00"}

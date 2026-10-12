@@ -1,0 +1,237 @@
+# Examplia is a fictional country. Every rate, threshold, date and source below is invented
+# to show the format. Do not use any of it for a real jurisdiction.
+
+questions:
+  - key: registered_vat
+    text: Is the business registered for VAT?
+    type: yes_no
+  - key: levy_liable
+    text: Is the business liable for the turnover levy?
+    type: yes_no
+  - key: sector
+    text: Which sector does most of the business's turnover come from?
+    type: choice
+    options: [services, retail]
+
+accounts:
+  - key: output_tax_control
+    name: Output Tax Control
+    subtype: current_liability
+    purpose: VAT charged on sales and self-assessed on reverse-charge purchases, awaiting payment
+    add_when: registered_vat
+  - key: input_tax_control
+    name: Input Tax Control
+    subtype: current_asset
+    purpose: Recoverable VAT on purchases
+    add_when: registered_vat
+  - key: levy_payable
+    name: Turnover Levy Payable
+    subtype: current_liability
+    purpose: Turnover levy charged, awaiting payment
+    add_when: levy_liable
+  - key: wht_receivable
+    name: Withholding Tax Receivable
+    subtype: current_asset
+    purpose: Tax deducted by customers, to be offset against the business's own tax
+  - key: wht_payable
+    name: Withholding Tax Payable
+    subtype: current_liability
+    purpose: Tax the business deducted from suppliers, awaiting payment
+
+taxes:
+  - key: VAT
+    name: Value added tax
+    kind: output_input
+    applies_when: registered_vat
+    accounts: {output: output_tax_control, input: input_tax_control}
+    filing:
+      frequency: monthly
+      due: {days_after_period_end: 20}
+    registration_threshold:
+      amount: "12000000.00"
+      measure: rolling_12_months
+      effective_from: 2024-01-01
+      source: "Examplia VAT Act 2020, s.10 (fictional)"
+  - key: LEVY
+    name: Turnover levy
+    kind: levy
+    charged_to_customer: true
+    applies_when: levy_liable
+    accounts: {payable: levy_payable}
+    filing:
+      frequency: quarterly
+      due: {day_of_following_month: 20}
+  - key: WHT
+    name: Withholding tax on services
+    kind: withholding
+    accounts: {receivable: wht_receivable, payable: wht_payable}
+    filing:
+      frequency: monthly
+      due: {day_of_following_month: 15}
+
+tax_codes:
+  - key: VAT-STD
+    tax: VAT
+    name: Standard-rated
+    applies_to: [sales, purchases]
+    treatment: standard
+    input_recoverable: true
+    compound_on: [LEVY]
+    rates:
+      - rate: "14"
+        effective_from: 2024-01-01
+        effective_to: 2025-12-31
+        source: "Examplia VAT Act 2020, s.4 (fictional)"
+      - rate: "15"
+        effective_from: 2026-01-01
+        effective_to: null
+        source: "Examplia Finance Act 2025, s.3 (fictional)"
+  - key: VAT-NR
+    tax: VAT
+    name: Standard-rated, input tax not recoverable
+    applies_to: [purchases]
+    treatment: standard
+    input_recoverable: false
+    rates:
+      - rate: "14"
+        effective_from: 2024-01-01
+        effective_to: 2025-12-31
+        source: "Examplia VAT Act 2020, s.4 and s.30 (fictional)"
+      - rate: "15"
+        effective_from: 2026-01-01
+        effective_to: null
+        source: "Examplia Finance Act 2025, s.3 (fictional)"
+  - key: VAT-ZERO
+    tax: VAT
+    name: Zero-rated (exports)
+    applies_to: [sales]
+    treatment: zero_rated
+    rates:
+      - rate: "0"
+        effective_from: 2024-01-01
+        effective_to: null
+        source: "Examplia VAT Act 2020, Schedule 2 (fictional)"
+  - key: VAT-EX
+    tax: VAT
+    name: Exempt
+    applies_to: [sales, purchases]
+    treatment: exempt
+  - key: VAT-RC
+    tax: VAT
+    name: Reverse charge on imported services
+    applies_to: [purchases]
+    treatment: reverse_charge
+    input_recoverable: true
+    rates:
+      - rate: "14"
+        effective_from: 2024-01-01
+        effective_to: 2025-12-31
+        source: "Examplia VAT Act 2020, s.12 (fictional)"
+      - rate: "15"
+        effective_from: 2026-01-01
+        effective_to: null
+        source: "Examplia Finance Act 2025, s.3 (fictional)"
+  - key: LEVY-SVC
+    tax: LEVY
+    name: Turnover levy, services
+    applies_to: [sales]
+    applies_when: {question: sector, in: [services]}
+    treatment: standard
+    rates:
+      - rate: "3"
+        base: {fraction: "1", gross_up: true}
+        effective_from: 2024-01-01
+        effective_to: null
+        source: "Examplia Turnover Levy Act 2022, s.2 and Schedule 1 (fictional)"
+  - key: LEVY-RET
+    tax: LEVY
+    name: Turnover levy, retail
+    applies_to: [sales]
+    applies_when: {question: sector, in: [retail]}
+    treatment: standard
+    rates:
+      - rate: "3"
+        base: {fraction: "3/5", gross_up: true}
+        effective_from: 2024-01-01
+        effective_to: null
+        source: "Examplia Turnover Levy Act 2022, s.2 and Schedule 1 (fictional)"
+  - key: WHT-SVC
+    tax: WHT
+    name: Withholding on service fees
+    applies_to: [receipts, payments]
+    treatment: withholding
+    rates:
+      - rate: "5"
+        effective_from: 2024-01-01
+        effective_to: null
+        source: "Examplia Income Tax Act 2019, s.85 (fictional)"
+
+rounding:
+  level: line
+  method: half_up
+  decimals: 2
+
+returns:
+  - key: VAT-RETURN
+    tax: VAT
+    name: VAT return
+    boxes:
+      - key: "1"
+        label: Standard-rated sales
+        sum: [{code: VAT-STD, side: sales, measure: net}]
+      - key: "2"
+        label: Zero-rated sales
+        sum: [{code: VAT-ZERO, side: sales, measure: net}]
+      - key: "3"
+        label: Exempt sales
+        sum: [{code: VAT-EX, side: sales, measure: net}]
+      - key: "4"
+        label: Output tax
+        sum:
+          - {code: VAT-STD, side: sales, measure: output_tax}
+          - {code: VAT-RC, side: purchases, measure: output_tax}
+      - key: "5"
+        label: Purchases
+        sum:
+          - {code: VAT-STD, side: purchases, measure: net}
+          - {code: VAT-NR, side: purchases, measure: net}
+          - {code: VAT-EX, side: purchases, measure: net}
+          - {code: VAT-RC, side: purchases, measure: net}
+      - key: "6"
+        label: Recoverable input tax
+        sum:
+          - {code: VAT-STD, side: purchases, measure: input_tax}
+          - {code: VAT-RC, side: purchases, measure: input_tax}
+  - key: LEVY-RETURN
+    tax: LEVY
+    name: Turnover levy return
+    boxes:
+      - key: "1"
+        label: Liable turnover
+        sum:
+          - {code: LEVY-SVC, side: sales, measure: net}
+          - {code: LEVY-RET, side: sales, measure: net}
+      - key: "2"
+        label: Levy due
+        sum:
+          - {code: LEVY-SVC, side: sales, measure: tax}
+          - {code: LEVY-RET, side: sales, measure: tax}
+  - key: WHT-RETURN
+    tax: WHT
+    name: Withholding tax statement
+    boxes:
+      - key: "1"
+        label: Tax deducted by customers
+        sum: [{code: WHT-SVC, side: receipts, measure: withheld}]
+      - key: "2"
+        label: Fees paid subject to withholding
+        sum: [{code: WHT-SVC, side: payments, measure: net}]
+      - key: "3"
+        label: Tax deducted from suppliers
+        sum: [{code: WHT-SVC, side: payments, measure: withheld}]
+
+pending_changes:
+  - description: Standard VAT rate to rise to 16%
+    announced: 2026-09-01
+    expected_effective: 2027-01-01
+    source: "Examplia Budget Speech 2026, para 41 (fictional)"

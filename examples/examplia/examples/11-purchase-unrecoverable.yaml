@@ -1,0 +1,27 @@
+id: "11"
+title: "Purchase with unrecoverable VAT and an exempt line"
+date: 2026-04-03
+document: purchase_bill
+answers:
+  registered_vat: yes
+  levy_liable: no
+  sector: services
+lines:
+  - {description: Client entertainment, amount: "200.00", amount_type: exclusive, codes: [VAT-NR]}
+  - {description: Insurance, amount: "100.00", amount_type: exclusive, codes: [VAT-EX]}
+working: |
+  Entertainment: 200.00 x 15% = 30.00, not recoverable, so it is part of the expense
+  Insurance: exempt, no VAT
+  Expense = 200.00 + 30.00 + 100.00 = 330.00; owed to supplier = 330.00
+expected:
+  lines:
+    - net: "200.00"
+      taxes: {VAT-NR: "30.00"}
+    - net: "100.00"
+      taxes: {VAT-EX: "0"}
+  total: "330.00"
+  postings:
+    - {account: expense, debit: "330.00"}
+    - {account: trade_payables, credit: "330.00"}
+  boxes:
+    VAT-RETURN: {"5": "300.00"}

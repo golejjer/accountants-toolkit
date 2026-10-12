@@ -1,0 +1,25 @@
+id: "16"
+title: "Exempt retail sale, levy still due"
+date: 2026-02-01
+document: sale_invoice
+answers:
+  registered_vat: yes
+  levy_liable: yes
+  sector: retail
+lines:
+  - {description: Exempt goods, amount: "2500.00", amount_type: exclusive, codes: [LEVY-RET, VAT-EX]}
+working: |
+  Levy base: 2500.00 x 3/5 = 1500.00; levy = 1500.00 x 3 / 97 = 46.3917..., rounded = 46.39
+  VAT exempt. Total = 2500.00 + 46.39 = 2546.39
+expected:
+  lines:
+    - net: "2500.00"
+      taxes: {LEVY-RET: "46.39", VAT-EX: "0"}
+  total: "2546.39"
+  postings:
+    - {account: trade_receivables, debit: "2546.39"}
+    - {account: revenue, credit: "2500.00"}
+    - {account: levy_payable, credit: "46.39"}
+  boxes:
+    VAT-RETURN: {"3": "2500.00"}
+    LEVY-RETURN: {"1": "2500.00", "2": "46.39"}

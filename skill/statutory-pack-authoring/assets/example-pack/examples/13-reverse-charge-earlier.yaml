@@ -1,0 +1,25 @@
+id: "13"
+title: "Reverse charge before the rate change, rounding"
+date: 2025-11-11
+document: purchase_bill
+answers:
+  registered_vat: yes
+  levy_liable: no
+  sector: services
+lines:
+  - {description: Overseas design service, amount: "333.33", amount_type: exclusive, codes: [VAT-RC]}
+working: |
+  Rate in force on 11 Nov 2025: 14%
+  333.33 x 14% = 46.6662, rounded = 46.67
+expected:
+  lines:
+    - net: "333.33"
+      taxes: {VAT-RC: "46.67"}
+  total: "333.33"
+  postings:
+    - {account: expense, debit: "333.33"}
+    - {account: input_tax_control, debit: "46.67"}
+    - {account: output_tax_control, credit: "46.67"}
+    - {account: trade_payables, credit: "333.33"}
+  boxes:
+    VAT-RETURN: {"4": "46.67", "5": "333.33", "6": "46.67"}

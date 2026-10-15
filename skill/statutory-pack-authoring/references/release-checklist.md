@@ -1,6 +1,8 @@
 # Before handing a pack over
 
-- [ ] `python scripts/validate.py <pack-folder>` shows no errors.
+- [ ] `python scripts/validate.py <pack-folder>` shows no errors (in a repository, `python checker/validate.py --repo .`).
+- [ ] The author's name, professional body and grade, and membership number are filled in `pack.yaml` (the checker fails without them).
+- [ ] `pack.yaml` version, the top `CHANGELOG.md` entry and the release tag (`v` plus the version) are the same.
 - [ ] Every warning has been read and either fixed or explained in `README.md`.
 - [ ] Every rate, threshold and due date cites an official source with its date.
 - [ ] Each tax code has at least three worked examples, with hand working, confirmed by the author.

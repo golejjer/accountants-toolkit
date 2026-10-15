@@ -53,17 +53,17 @@ If you can operate a browser, do these clicks for the author and show them the r
 
 Work through `SKILL.md` steps 2 to 8: research each rule in its official source, then draft `pack/pack.yaml`, `pack/rules.yaml`, the worked examples in `pack/examples/`, `pack/guidance/GUIDANCE.md`, `pack/CHANGELOG.md` and `pack/README.md`.
 
-For each file: show the author the complete content, get their confirmation, then have them open the file in their repository (pencil icon), replace the contents, and **Commit changes** directly to main. Or do it for them if you can operate a browser.
+For each file: show the author the complete content and get their confirmation. Files that already exist in `pack/` are changed by opening them (pencil icon), replacing the contents and choosing **Commit changes** directly to main. New files are made with **Add file**, **Create new file**, typing the full path in the name box (for example `pack/examples/01-services-sale.yaml`; a slash makes the folder). Do not use **Upload files** unless you have checked afterwards that every file sits inside `pack/`: uploads can drop the folder and leave files at the top level, where they are not read. Delete the blank `pack/examples/00-template.yaml` once the author has their own examples. Do these steps for the author if you can operate a browser.
 
-After every save, GitHub runs the checker. A **green tick** on the latest commit means the pack passes; a **red cross** means it does not. Ask the author to click the cross and paste you the output, fix the file, and save again. The checker recomputes every worked example from the rules, so a mismatch means either the rules or the hand calculation is wrong: work out which, and never change an expected answer only to make the check pass.
+After every save, GitHub runs the checker. A green tick alone is not enough: open the **Actions** tab, the latest run, and the step **Check your pack**, and confirm that it names the author's pack and ends with `0 error(s)`. If it says `pack/` has not been started, the pack was not checked. A **red cross** means a problem: ask the author to paste you the output, fix the file, and save again. The checker recomputes every worked example from the rules, so a mismatch means either the rules or the hand calculation is wrong: work out which, and never change an expected answer only to make the check pass.
 
 Rules that cannot be expressed with the capabilities in `capabilities.md` go in `pack/capability-requests.md`, with the legal source and a worked example. Do not approximate them.
 
 ### 5. Publish a release
 
-When the latest commit has a green tick and the author has confirmed every worked example:
+When the step **Check your pack** on the latest commit reports the author's pack with `0 error(s)`, the author's own name, credential and membership number are filled in `pack/pack.yaml`, and the author has confirmed every worked example:
 
-1. Set `version` in `pack/pack.yaml` (first release `0.1.0`) and add the `pack/CHANGELOG.md` entry.
+1. Set `version` in `pack/pack.yaml` (first release `0.1.0`), add the `pack/CHANGELOG.md` entry with the same number, and use the tag `v0.1.0`. The three must match.
 2. On the repository page: **Releases**, **Draft a new release**, tag `v0.1.0`, title `v0.1.0`, description copied from the change log, **Publish release**.
 
 ### 6. Finish

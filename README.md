@@ -81,7 +81,8 @@ GoLejjer registers the pack by its repository link and tag, runs its own checks,
 | Folder | What it is |
 |---|---|
 | `skill/statutory-pack-authoring/` | The [Agent Skill](https://agentskills.io): procedure, format, capabilities, example rules, guidance rules, GitHub guide, and the checker |
-| `checker/validate.py` | Runs the checker on a pack folder: `python checker/validate.py pack` (Python 3 and PyYAML) |
+| `checker/validate.py` | Runs the checker: `python checker/validate.py --repo .` checks your whole repository (files in `pack/`, author details filled in, version matches) (Python 3 and PyYAML) |
+| `tests/` | The checker's own tests (toolkit maintainers only) |
 | `pack/` | The empty pack the author fills in after "Use this template" |
 | `examples/examplia/` | A complete pack for a fictional country; every rate is invented |
 | `.github/workflows/check.yml` | Runs the checker on every save and shows a tick or a cross |

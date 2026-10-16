@@ -23,6 +23,10 @@ pack:
   last_reviewed: null             # date of the last full review
 ```
 
+**Authors.** Every author must have a real `name`, `credential` (professional body and grade) and `member_no` (membership number). The checker fails if any is empty or still template text (for example `<Full name>`, "to be completed", "n/a"). The pack carries these details to every client; GoLejjer does not verify them.
+
+**Version.** `version` must equal the top `## x.y.z` heading in `CHANGELOG.md` and, for a release, the tag without its `v` (tag `v0.1.0` for version `0.1.0`).
+
 ## 2. `rules.yaml`: the rule data
 
 Top-level sections, in this order: `questions`, `accounts`, `taxes`, `tax_codes`, `rounding`, `returns`, `pending_changes`.

@@ -21,10 +21,16 @@ jobs:
       - name: Check the fictional example pack
         run: python checker/validate.py examples/examplia
 
+      - name: Run the checker's own tests
+        if: github.repository == 'golejjer/accountants-toolkit'
+        run: python -m unittest discover tests
+
       - name: Check your pack
         run: |
-          if grep -q '<jurisdiction>' pack/pack.yaml; then
-            echo "pack/ has not been started yet (pack.yaml still holds the template placeholders), so it is not checked."
+          if [ "$GITHUB_REPOSITORY" = "golejjer/accountants-toolkit" ]; then
+            echo "This is the toolkit itself, which holds only the empty template, so there is no pack to check."
+          elif [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            python checker/validate.py --repo . --tag "$GITHUB_REF_NAME"
           else
-            python checker/validate.py pack
+            python checker/validate.py --repo .
           fi

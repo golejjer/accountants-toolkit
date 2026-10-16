@@ -2,9 +2,14 @@
 """Statutory pack checker (schema 0.1).
 
 Usage: python validate.py <pack-folder>
+       python validate.py --repo <repository-folder> [--tag vX.Y.Z]
 
-Checks the manifest, the rule data, the guidance file, and recomputes every
-worked example from the rules. Exit code 0 when there are no errors.
+Checks the manifest (including the author's name, credential and membership
+number), the rule data, the guidance file, that the version matches the top
+CHANGELOG entry, and recomputes every worked example from the rules.
+With --repo it first checks that the files sit inside the repository's pack/
+folder, that pack/ is no longer the empty template, and (with --tag) that the
+release tag matches the pack version. Exit code 0 when there are no errors.
 Needs Python 3.8+ and PyYAML (pip install pyyaml).
 """
 import re
@@ -38,6 +43,18 @@ DOCUMENTS = {"sale_invoice": "sales", "purchase_bill": "purchases",
              "receipt": "receipts", "payment": "payments"}
 ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
+
+
+PLACEHOLDER_RE = re.compile(
+    r"(<[^>]*>|^\s*(n/?a|none|nil|tbc|tbd|todo|xxx+|-+|\?+)\s*$|"
+    r"\b(to be (completed|confirmed|added|filled)|tbc|tbd|todo|placeholder|your name|full name)\b)", re.I)
+AUTHOR_FIELDS = (("name", "full name"), ("credential", "professional body and grade"),
+                 ("member_no", "membership number"))
+
+
+def is_placeholder(value):
+    text = "" if value is None else str(value).strip()
+    return not text or bool(PLACEHOLDER_RE.search(text))
 
 
 class Report:
@@ -155,12 +172,37 @@ class Pack:
             rep.err("pack.yaml", "pack.level must be private, shared or verified")
         if not p.get("authors"):
             rep.err("pack.yaml", "at least one author is required")
-        authors = {a.get("name") for a in p.get("authors") or []}
+        for i, a in enumerate(p.get("authors") or [], 1):
+            if not isinstance(a, dict):
+                rep.err("pack.yaml", f"author {i} must have name, credential and member_no")
+                continue
+            for field, plain in AUTHOR_FIELDS:
+                if is_placeholder(a.get(field)):
+                    rep.err("pack.yaml", f"author {i}: {field} ({plain}) is empty or still the template text; "
+                            "the author must fill in their own details before the pack can pass")
+        authors = {a.get("name") for a in p.get("authors") or [] if isinstance(a, dict)}
         for r in p.get("reviewers") or []:
             if r.get("name") in authors:
                 rep.err("pack.yaml", f"{r.get('name')!r} cannot be both author and reviewer")
         if p.get("level") == "verified" and not p.get("reviewers"):
             rep.warn("pack.yaml", "a verified pack needs a reviewer before release")
+
+    def check_version(self, tag=None):
+        rep = self.rep
+        version = str((self.manifest.get("pack") or {}).get("version", ""))
+        path = self.folder / "CHANGELOG.md"
+        if path.exists():
+            m = re.search(r"^##\s+v?(\d+\.\d+\.\d+)", path.read_text(encoding="utf-8"), re.M)
+            if not m:
+                rep.err("CHANGELOG.md", "no entry like '## 0.1.0' found; add one for this version")
+            elif version and m.group(1) != version:
+                rep.err("CHANGELOG.md", f"the top entry is {m.group(1)} but pack.yaml says version {version}; "
+                        "they must match")
+        if tag is not None:
+            if not re.match(r"^v\d+\.\d+\.\d+$", tag):
+                rep.err("release tag", f"tag {tag!r} must look like v0.1.0")
+            elif version and tag[1:] != version:
+                rep.err("release tag", f"tag {tag} does not match pack.yaml version {version}")
 
     def check_rules(self):
         rep, r = self.rep, self.rules
@@ -700,18 +742,61 @@ class Pack:
                     (self.rep.err if n >= 3 else self.rep.warn)(f"guidance line {i}", msg)
 
 
+def check_repo_layout(root, rep):
+    """Returns the pack folder to check, or None if it cannot be checked."""
+    where = {"pack.yaml": "pack/pack.yaml", "rules.yaml": "pack/rules.yaml",
+             "GUIDANCE.md": "pack/guidance/GUIDANCE.md"}
+    stray = {n: where[n] for n in where if (root / n).exists()}
+    stray.update({f.name: f"pack/examples/{f.name}" for f in sorted(root.glob("[0-9][0-9]-*.yaml"))})
+    for n, target in stray.items():
+        rep.err(n, f"this file is at the top of the repository; it belongs at {target} (open it, click the pencil, "
+                "and change its name to that path)")
+    folder = root / "pack"
+    if not (folder / "pack.yaml").exists():
+        rep.err("pack/", "pack/pack.yaml is missing, so no pack was found to check")
+        return None
+    text = (folder / "pack.yaml").read_text(encoding="utf-8")
+    if "<jurisdiction>" in text:
+        rep.err("pack/pack.yaml", "still the empty template; the pack has not been started")
+        return None
+    if (folder / "examples" / "00-template.yaml").exists():
+        rep.err("pack/examples/00-template.yaml", "the blank sample is still here; delete it")
+    return folder
+
+
 def main():
-    if len(sys.argv) != 2:
+    args = sys.argv[1:]
+    tag = None
+    if "--tag" in args:
+        i = args.index("--tag")
+        if i + 1 >= len(args):
+            sys.exit(__doc__)
+        tag = args[i + 1]
+        del args[i:i + 2]
+    repo_mode = "--repo" in args
+    if repo_mode:
+        args.remove("--repo")
+    if len(args) != 1 or (tag and not repo_mode):
         sys.exit(__doc__)
-    folder = Path(sys.argv[1])
     rep = Report()
+    folder = Path(args[0])
+    if repo_mode:
+        folder = check_repo_layout(folder, rep)
+        if folder is None:
+            for line in rep.errors:
+                print(line)
+            print(f"\n{len(rep.errors)} error(s), 0 warning(s)")
+            sys.exit(1)
     pack = Pack(folder, rep)
+    info = pack.manifest.get("pack") or {}
+    print(f"Checking: {folder}  pack {info.get('id', '?')}  version {info.get('version', '?')}\n")
     pack.check_manifest()
+    pack.check_version(tag)
     pack.check_rules()
     if not rep.errors:
         pack.check_examples()
     else:
-        rep.warn("examples", "not recomputed until the rule errors above are fixed")
+        rep.warn("examples", "not recomputed until the errors above are fixed")
     pack.check_guidance()
     for path in ("CHANGELOG.md", "README.md"):
         if not (folder / path).exists():

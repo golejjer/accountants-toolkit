@@ -105,3 +105,32 @@ class Versions(Case):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LegacyFields(Case):
+    def test_old_pack_with_retired_fields_still_passes(self):
+        self.edit("pack/pack.yaml", "  version:", "  level: private\n  status: draft\n  reviewers: []\n  last_reviewed: null\n  version:")
+        code, out = run("--repo", self.repo)
+        self.assertEqual(code, 0, out)
+
+    def test_pack_without_level_passes(self):
+        self.assertNotIn("level", (self.repo / "pack" / "pack.yaml").read_text(encoding="utf-8"))
+        code, out = run("--repo", self.repo)
+        self.assertEqual(code, 0, out)
+
+    def test_bad_level_value_fails(self):
+        self.edit("pack/pack.yaml", "  version:", "  level: banana\n  version:")
+        code, out = run("--repo", self.repo)
+        self.assertEqual(code, 1)
+        self.assertIn("pack.level", out)
+
+
+class Banner(Case):
+    def test_first_line_names_checker_version(self):
+        code, out = run("--repo", self.repo)
+        self.assertTrue(out.startswith("Toolkit checker "), out)
+
+    def test_version_flag(self):
+        code, out = run("--version")
+        self.assertEqual(code, 0)
+        self.assertTrue(out.startswith("Toolkit checker "), out)

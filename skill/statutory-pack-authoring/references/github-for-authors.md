@@ -124,6 +124,7 @@ A private repository works the same way, but the platform cannot read it on its 
 
 | What you see | What to do |
 |---|---|
+| The first line of **Check your pack** is not `Toolkit checker 1.1` (or higher), or your repository was created before October 2026 | Your checker is old. Follow `update-an-older-repository.md` before anything else. |
 | Your files are at the top of the repository, not in `pack/` | Move each one as described under "Check where your files are". |
 | The step **Check your pack** says `pack/` has not been started | Your pack was not checked. Make sure your files are inside `pack/` and that `pack/pack.yaml` no longer holds the template text (angle brackets such as `<jurisdiction>`). |
 | A red cross and errors in **Check your pack** | Copy the text into your assistant and work through each message. |

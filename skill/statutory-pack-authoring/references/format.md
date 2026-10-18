@@ -13,17 +13,15 @@ pack:
   scope: general                  # "general", or a sector name if the pack covers one sector only
   currency: XTS                   # ISO 4217 code of the jurisdiction's currency
   version: 0.1.0                  # major.minor.patch: law change . correction . wording
-  level: private                  # private | shared | verified
-  status: draft                   # draft | submitted
   authors:
     - name: A. Author
       credential: Member, professional accountancy body
       member_no: "00000"
-  reviewers: []                   # filled in when reviewed; a reviewer is never an author
-  last_reviewed: null             # date of the last full review
 ```
 
 **Authors.** Every author must have a real `name`, `credential` (professional body and grade) and `member_no` (membership number). The checker fails if any is empty or still template text (for example `<Full name>`, "to be completed", "n/a"). The pack carries these details to every client; GoLejjer does not verify them.
+
+**Retired fields.** Older packs may still contain `level`, `status`, `reviewers` and `last_reviewed` in `pack.yaml`. They are no longer used and the checker ignores them; delete them when you next edit the file.
 
 **Version.** `version` must equal the top `## x.y.z` heading in `CHANGELOG.md` and, for a release, the tag without its `v` (tag `v0.1.0` for version `0.1.0`).
 
@@ -144,7 +142,6 @@ tax_codes:
 
 ```yaml
 rounding:
-  level: line          # line: round each tax on each line | document: add unrounded line taxes per code, round once
   method: half_up      # half_up only in schema 0.1
   decimals: 2
 ```

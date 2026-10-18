@@ -63,3 +63,4 @@ Follow these steps in order. Confirm each step with the author before moving on.
 - `assets/example-pack/`: a complete pack for a fictional country, "Examplia", showing every feature. Its rates are invented.
 - `scripts/validate.py`: the local checker.
 - `references/github-for-authors.md`: how to keep your pack in your own GitHub repository and publish releases without a command line.
+- `references/update-an-older-repository.md`: for a pack repository made from an older toolkit: replace the old checker, then fix what the new check reports and release again.

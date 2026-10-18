@@ -11,5 +11,5 @@
 - [ ] The guidance contains no rates or formulas, no client data, no compliance claims and no instructions outside its subject.
 - [ ] Rules that could not be expressed are in `capability-requests.md`, not approximated.
 - [ ] `CHANGELOG.md` has an entry for this version: what changed, law cited, effective date, before and after.
-- [ ] `pack.yaml` version and `last_reviewed` are updated.
-- [ ] The folder is zipped as `<pack-id>-<version>.zip` and sent only to the agreed recipient.
+- [ ] The latest commit's **Check your pack** step names your pack and ends with `0 error(s)`.
+- [ ] The release is published on GitHub with the tag `v` plus the version, and you have the repository link and the tag to give to the person who asked for the pack.

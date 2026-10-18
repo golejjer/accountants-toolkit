@@ -168,8 +168,11 @@ class Pack:
             rep.err("pack.yaml", "pack.currency must be a three-letter ISO currency code")
         if not VERSION_RE.match(str(p.get("version", ""))):
             rep.err("pack.yaml", "pack.version must look like 1.2.3")
-        if p.get("level") not in {"private", "shared", "verified"}:
-            rep.err("pack.yaml", "pack.level must be private, shared or verified")
+        # `level`, `status`, `reviewers` and `last_reviewed` are no longer used.
+        # Packs that still carry them pass; new packs leave them out.
+        if p.get("level") is not None and p.get("level") not in {"private", "shared", "verified"}:
+            rep.err("pack.yaml", "pack.level, if present, must be private, shared or verified "
+                    "(it is no longer used; you can delete the line)")
         if not p.get("authors"):
             rep.err("pack.yaml", "at least one author is required")
         for i, a in enumerate(p.get("authors") or [], 1):
@@ -184,8 +187,6 @@ class Pack:
         for r in p.get("reviewers") or []:
             if r.get("name") in authors:
                 rep.err("pack.yaml", f"{r.get('name')!r} cannot be both author and reviewer")
-        if p.get("level") == "verified" and not p.get("reviewers"):
-            rep.warn("pack.yaml", "a verified pack needs a reviewer before release")
 
     def check_version(self, tag=None):
         rep = self.rep
@@ -764,8 +765,16 @@ def check_repo_layout(root, rep):
     return folder
 
 
+CHECKER_VERSION = "1.1"
+BANNER = f"Toolkit checker {CHECKER_VERSION}"
+
+
 def main():
     args = sys.argv[1:]
+    if "--version" in args:
+        print(BANNER)
+        sys.exit(0)
+    print(BANNER)
     tag = None
     if "--tag" in args:
         i = args.index("--tag")

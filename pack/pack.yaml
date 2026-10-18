@@ -6,11 +6,7 @@ pack:
   scope: general                      # or a sector name
   currency: XXX                       # ISO 4217
   version: 0.1.0
-  level: private                      # private | shared | verified
-  status: draft
   authors:
     - name: <Full name>
       credential: <Professional body and membership grade>
       member_no: "<number>"
-  reviewers: []
-  last_reviewed: null

@@ -28,6 +28,8 @@ Read these files, in this order, before asking the author anything:
 4. `skill/statutory-pack-authoring/references/worked-examples.md` ([raw](https://raw.githubusercontent.com/golejjer/accountants-toolkit/main/skill/statutory-pack-authoring/references/worked-examples.md)) and `writing-guidance.md` ([raw](https://raw.githubusercontent.com/golejjer/accountants-toolkit/main/skill/statutory-pack-authoring/references/writing-guidance.md)): how to write the examples and the guidance.
 5. `examples/examplia/` ([rules](https://raw.githubusercontent.com/golejjer/accountants-toolkit/main/examples/examplia/rules.yaml), [one example](https://raw.githubusercontent.com/golejjer/accountants-toolkit/main/examples/examplia/examples/01-service-sale.yaml), [guidance](https://raw.githubusercontent.com/golejjer/accountants-toolkit/main/examples/examplia/guidance/GUIDANCE.md)): a complete pack for a fictional country. Every figure in it is invented; use it only to see the shape.
 
+**If the author already has a pack repository** made from this template before October 2026, read `skill/statutory-pack-authoring/references/update-an-older-repository.md` ([raw](https://raw.githubusercontent.com/golejjer/accountants-toolkit/main/skill/statutory-pack-authoring/references/update-an-older-repository.md)) first: their copy of the checker is old and must be replaced before anything else. The first line of the **Check your pack** step must read `Toolkit checker 1.1` or higher.
+
 If you can install skills (for example Claude with code execution on), you may instead upload `statutory-pack-authoring.zip` from this repository's Releases page and activate it. Reading the files directly works just as well.
 
 ### 2. Agree the scope with the author
